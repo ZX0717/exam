@@ -1,0 +1,546 @@
+<!-- <div class="right"> -->
+<div class="editingarea">
+    <div class="c_flex">
+        <span class="c_flexible"></span>
+    </div>
+    <div class="c_editview">
+
+        <div class="c_condition">
+            <span><select><option>题干</option></select></span>
+            <span class="pl5 " >
+                <input type="text">
+            </span>
+            <span class="pl15 pr15 btn_gray ">查找</span>
+            <span class="icon_lead-in">
+                <em class="icon_r">批量导入题目</em>
+            </span>
+            <span class="icon_add">
+                <em class="icon_r">单个添加题目</em>
+            </span>
+        </div>
+
+<!-- 表格！！！！！  ↓↓↓↓ -->
+        <div class="divtable">  
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" 
+                   class="tablea">
+                <tr hidden>
+                    <td align="center">年份-会被替换的字</td>
+                    <td align="left">
+                        <div class="chose">
+                            <a href="#" class="active3" >全部</a>
+                            <a href="#">语文</a>
+                            <a href="#">数学</a>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="Catalog">
+            <div class="Catalog_right">
+                <div class="Catalogtitle">总计<em>15552</em>
+                    道题&nbsp;&nbsp;
+                    提示：单击体面可显示答案和解析&nbsp;&nbsp;
+                    <input type="checkbox" />
+                    <b>显示答案和解析</b>&nbsp;&nbsp;
+                    <a href="#" class="Thispage">本页全部试题加入试卷</a>
+                    <div>
+                        <i>1</i>
+                        <a href="#" class="pageone">前</a>
+                        <a href="#" class="pagetwo">后</a>
+                    </div>
+                </div>
+                    <!-- 添加hidden属性  -->
+                <div class="Catalog_rightnei" hidden>
+                    <div class="Catalogtitwo">
+                        题号：25544&nbsp;&nbsp;
+                        题型：三种&nbsp;&nbsp;
+                        难度：三种&nbsp;&nbsp;
+                        上传人：XXXXX &nbsp;&nbsp;
+                        来源：XXXXX &nbsp;&nbsp;
+                        上传时间:??????&nbsp;&nbsp;
+                        组卷次数：<em>0</em>
+                    </div>
+                    <div class="Catalogcontent">
+                        <div class="Catalogcontentup">题目:<br></div>
+                        <div class="Catalogcontentdown">
+                            <a href="javascript:void(0)" class="check">审核通过</a>
+                            <a href="javascript:void(0)" class="uncheck">审核不通过</a>
+                            <a href="javascript:void(0)" class="delete">删除题目</a>
+                        </div>
+                    </div>
+                </div>
+                    <!--两个框不用区分的吗= = 审核过的题目才可以加入事试卷  -->
+                <div class="Catalog_rightnei">
+                    <div class="Catalogtitwo">
+                        题号：25544&nbsp;&nbsp;
+                        题型：三种&nbsp;&nbsp;
+                        难度：三种&nbsp;&nbsp;
+                        上传人：XXXXX &nbsp;&nbsp;
+                        来源：XXXXX &nbsp;&nbsp;
+                        上传时间:?????? &nbsp;&nbsp;
+                        组卷次数：<em>0</em>
+                    </div>
+                    <div class="Catalogcontent">
+                        <div class="Catalogcontentup">题型：</div>
+                        <div class="Catalogcontentdown">
+                            <a href="javascript:void(0)">加入试卷</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+</div>
+<!-- </div>   -->
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+    $(function(){
+    //【添加题目】
+        /*点击单个添加题目，页面跳转*/
+        $('.c_condition .icon_add .icon_r').click(function(){
+        $('.right').load('./load/addSubject.html');
+        })
+    //【主页】获取后台数据
+    //①                   发送请求 【异步操作【乱序的原因= =】】
+        $.getJSON("exam/manager/getAllSubjectType",function(data){
+            var tr1 = $('tr:hidden').clone().removeAttr('hidden');
+            $('.tablea').prepend(tr1);//【添加到表格的第一行 append(tr4)添加到最后】
+            tr1.children("td").eq(0).html('类型');
+            tr1.find('.chose').html('');//清空
+                //↓遍历数据/数组 获得数据// 每一项 ,索引 index,  
+            data.forEach( function(item,index){//通过遍历，将“语文”等依次替换为json文件中的数据item的realname
+            if(index==0){                                //↓这里，给添加的a标签增添一个id属性，以便之后实现按钮筛选功能
+                var a = $('<a href="javascript:void(0)" class="active3" id='+item.id+' name='+item.name+'>'+item.realName+'</a>');
+            }else{
+                var a = $('<a href="javascript:void(0)" id='+item.id+' name='+item.name+'>'+item.realName+'</a>');
+            }
+                // 由于底色显示绿色的样式是加在class=chose元素下的子元素a标签上的，所以在一行中的第二列整体上添加一个class，就能让在其中添加的a获得对应样式
+            tr1.find('.chose').append(a);//效果差不多
+            //tr1.children("td").eq(1).attr("class","chose").append(a);//这里 由于作为按钮时不使用div会出些问题 等搞懂这个项目后再试试这样可不可以
+            });
+        //tr1.attr("class","types");
+        });
+    //②
+        $.getJSON('exam/manager/getAllSubjectLevel',function(data){
+            var tr2 = $('tr:hidden').clone().removeAttr('hidden'); 
+            $('.tablea').append(tr2);
+        //$('.tablea').find("tr").eq(0).before(tr2);
+            tr2.children('td').eq(0).html('难易程度');
+            //选中一行的第二列并清空内容//$('.chose').eq(1).html('');
+            tr2.find('.chose').html('');
+            data.forEach( function(item,index){
+            if(index==0){
+                var a = $('<a href="javascript:void(0)" class="active3" id='+item.id+' name='+item.name+'>'+item.realName+'</a>');
+            }else{
+                var a = $('<a href="javascript:void(0)" id='+item.id+' name='+item.name+'>'+item.realName+'</a>');
+            }
+            tr2.find('.chose').append(a);
+            //tr2.children("td").eq(1).attr("class","chose").append(a);
+            });
+        });
+    /*③*/
+        $.getJSON('exam/manager/getAllTopics',function(data){
+            var tr3 = $('tr:hidden').clone().removeAttr('hidden');
+            $(".tablea").append(tr3);  
+        //【如何将一行添到表中并令表格刷新不乱序】
+            //$('.tablea').find("tr").eq(1).next().after(tr3);
+        $('.tablea').find("tr").last().before(tr3);
+            tr3.children('td').eq(0).html('知识点');
+            tr3.find('.chose').html('');
+            data.forEach( function(item,index){
+            if(index==0){
+                var a = $('<a href="javascript:void(0)" class="active3" id='+item.id+' name='+item.name+'>'+item.title+'</a>');
+            }else{
+                var a = $('<a href="javascript:void(0)" id='+item.id+' name='+item.name+'>'+item.title+'</a>');
+            }
+            tr3.find('.chose').append(a);
+            //tr3.children("td").eq(1).attr("class","chose").append(a);
+            });
+        });
+    /*④*/
+        $.getJSON('exam/manager/getAllDepartmentes',function(data){
+            var tr4 = $('tr:hidden').clone().removeAttr('hidden'); 
+            //$(".tablea").append(tr4);
+        //$('.tablea').find("tr").eq(2).after(tr4);
+        $('.tablea').find("tr").last().before(tr4);
+            tr4.children('td').eq(0).html('方向');
+            //【如何将拷贝来的一行的第二列中的项清空】
+                //tr3.find('.chose').html('');
+                //tr4.children("td").eq(1).children(".chose").remove();【将整个div移除】
+            tr4.children("td").eq(1).children("div").empty();//empty只将其中的子元素移除
+            data.forEach( function(item,index){
+            if(index==0){
+                var a = $('<a href="javascript:void(0)" class="active3" id='+item.id+' name='+item.realName+'>'+item.name+'</a>');
+            }else{
+                var a = $('<a href="javascript:void(0)" id='+item.id+' name='+item.realName+'>'+item.name+'</a>');
+            }
+             tr4.find('.chose').append(a);//[选项有一点对不齐]
+            //【这里，两种将a追加到第二列的方式，各自可以对齐，最好不要混用，大概是样式方面有些差异】
+            //tr4.children("td").eq(1).attr("class","chose").append(a);
+            });
+        });
+
+
+
+
+
+    /*==============================================================*/
+    //事件代理【将点击事件绑在表格上，而this可以取到每个触发了点击事件的a标签】
+        //绑定事件前先解绑【目前没发现什么区别= =】//
+        $(".tablea").off("click");
+        //通过“.chose”绑不上去？也许和上面将a标签添加到表格上的方式有关系= =
+        $(".tablea").on("click","a",function(){
+            $(this).addClass("active3").siblings().removeClass("active3");
+            var arr=$('.tablea tr td div a.active3').get();
+                var type = '';
+                var direct = '';
+                var level = '';
+                var topic = '';
+                var subjectId="";
+          //获取四个外键的id           每一个a标签 
+                arr.forEach( function(item,index,arr){
+                        //将item-获取的每一项即一个a标签 转换成jQuery对象
+                            //这个a标签的前两个父级的前一个兄弟元素可以获取这一行的第一列内容//var atd = $(item).parent().parent().prev().html();
+                    var atd = $(item).parent().parent().parent().children().eq(0).html();
+                        //经由遍历，atd获取的html()是一个个文字【这里注意与上文页面中的文字相同】
+                    switch(atd){        /*  获取类型外键的id属性 */ 
+                        case "类型": type=$(item).attr("id");
+                            break;
+                        case "方向": direct=$(item).attr("id");
+                            break;
+                        case "难易程度": level=$(item).attr("id");
+                            break;
+                        case "知识点": topic=$(item).attr("id");
+                            break;
+                    }
+                }  ); 
+
+          //【将数据【外键id】发送到后台，【数据是在上述代码获取的= =】而这些数据都是在showData函数中展示在页面上的的】
+            /*【将数据发送到后台】【后台根据querySubject方法??判断取出对应题目】*/
+                $.ajax('exam/manager/querySubject',{
+                    method:"post",
+                    //【如果在routes文件夹里的XXRoutes.js文件中将post改成了get。即使将这里的method改成get，代码也没用，可能下面获取数据的方式也要改】
+                    data:{//携带的数据【大概用为携带了数据，使用post方式】
+                        "subject.department.id":direct,
+                        "subject.topic.id":topic,
+                        "subject.subjectType.id":type,
+                        "subject.SubjectLevel.id":level
+                    },
+                    success:function(data){
+                        //console.log("data??:",data);/*获取的data是一个数组，当函数找到结果时，找到几个结果这个数组中就有几项*/
+                        //【这里，函数调用一个数组，】
+                        showData(data);
+                        //以上，将span追加到了一个复制的div中，将p追加到了span之后
+
+                    }
+                }  );
+        //这里，span和选项p都加载完，开始处理三个按钮？【还是在筛选条件的点击事假之下，不然连题目的div都没有】
+            
+
+
+
+
+
+        });//筛选条件按钮点击【结束】
+
+    //【获取后台数据】
+    })//$(function()【结束】
+
+
+
+
+//【另外写的方法】
+    //【①】showData();【写在$(function(){}  )之外】【参数data是个数组】
+    function showData(data){
+        //【把这个注释了就不报错了= =【data就是数组 不用转换？？？】】//data = JSON.parse(data);
+        $('.Catalogtitle').find("em").html(data.length);//将【总计】的数据与数据库关联
+        //清空【点击才可执行】//【还是希望打开页面，全部的a标签可以模拟点击，显示出所有题目】
+        $('.Catalog_rightnei:not(:hidden)').remove();
+        //$('.Catalog_rightnei:visible').remove();
+
+        //遍历参数数组：         item是数组中的每一项，即一题就是一个item
+        data.forEach( function(item,index){
+            //【调整后用不上了，把var加回去】(划掉→)由于下文要用，把这个div改成全局属性了
+            var div=$('.Catalog_rightnei:hidden').clone().removeAttr("hidden");
+            //将显示题目的div克隆一份，再将这个div添加在右侧下方一块
+                $('.Catalog_right').append(div);
+                //var id = item.id;
+            var subjectId = item.id;//【获取到一个题目的id】/item：即调用函数执行sql语句后找出的符合条件的数据，找到几条item就有几个
+                
+            //获取-题目题干信息，作为一个元素，添加到【题目：】之后//给每一个题目添上这个题目的subjectId
+                var stemOne = $("<span id='stemOne' class="+subjectId+">"+item.stem+"</span>");
+                div.find(".Catalogcontentup").append(stemOne);
+            // div.find(".Catalogcontentdown").attr("class","subjectId");
+
+            /*======================================================================*/
+                //获取-题目细节信息：题型
+                //【不同的题型有不同的显示：单选多选显示选项，简答显示解析或答案？】
+                //var stemType = $("<span>"+item.subjectType_id+"</span>");
+                //【全部】//if(item.subjectType_id==1)
+                //【单选】【多选】
+                if(item.subjectType_id==2 || item.subjectType_id==3){//获取题目的选项，遍历取出？【选项是从一个数据表取出的？？？要写方法吗= =】
+                    $.ajax('exam/manager/queryChoiceBySubject',{
+                        method:"post",
+                        data:{"subject.id":subjectId },//-将题目的id传过去？？？
+                        success:function(data){// console.log("queryChoiceBySubject-data:",data);//获取的data是一个数组，其中每一项是个对象，是题目的各个选项
+                            //由于是遍历的，每一次得到的data就是一道题的【选项】信息【反正点开就是选项[内容]啊！！！】
+                            //【这里，函数调用一个数组，】
+                                showChoice(data);
+                            //以上，取出了选项，取出了正误，但无法将选项与题目对应上
+                            //【如何让选项确定一道题？已经在题干的span上加了于subjectId一致的类】
+
+                        }
+                    });//如何在将题干添上去后再获取到这个题干？【Jquery选择器中使用变量实现动态选择】
+                            // $("span[class='"+subjectId+"']").append(Content);【这些写在【showChoice方法的后文】】
+                }//以上if应该得到了这个题目的选项：Content。在showChoice方法中，将这个content追加到了span之后
+            
+                //【简答题】
+                //if(item.subjectType_id==4){
+                    //将题目的id发到后台【ajax】，经过一个XXXDB.js中的方法，执行sql语句找出符合条件的简答题[data]。
+                    //将这些提通过前端的方法[如showAnswer()]，将得到的数据遍历，一个一个展示出来的是每一道题的答案
+                    //遍历后，这些被遍历的简答题都得到了对应的答案
+                //}//showData函数结束后，所有div都会得到对应的简答题[带答案]
+        //【对于简答题审核的绑定OTZ】【因为之前对绑定的操作是绑定在添加选项的遍历函数里的。这里则绑定到到对筛选后获得的题目组成的数组进行遍历后得到的每一项上】
+            $("span[class='"+item.id+"']").parent().parent().find(".Catalogcontentdown").off("click");
+            //$("span[class='"+item.id+"']").parent().parent().find(".Catalogcontentdown").on("click",'a',function(){alert("choice_subject_id/item.id:"+item.id+"  【简答题的审核按钮】绑定a成功22222")});
+        //++++++++++++++++++++++++++++++++++++
+                $("span[class='"+item.id+"']").parent().
+                parent().find(".Catalogcontentdown").attr("id",item.id)//添加变量时不加引号即可= =【大概会class绑定了样式，所以绑在id上好了】
+                .on("click",'a',function(){//【这里，已经选中被点击的那个按钮。不需要再遍历什么的】
+                    var sub_id=item.id;//【设置一个变量，方便使用题id
+                    switch($(this).html()){
+                        case "审核通过":
+                            //选到了已审核按钮：如何调用后台审核方法？
+                            //要传递的数据？【后台方法：通过题号，确定要修改的那条数据
+                            $.ajax('exam/manager/checkSubject',{
+                                method:"post",
+                                data:{"subjectId":sub_id},
+                                success:function(retu){
+                                    alert("第"+sub_id+"道题，审核"+retu);
+                                }
+                            }
+                            );
+                                $(this).parent().empty();
+                                var addInExamPaper = $("<a href='javascript:void(0)' class='addExam' id="+sub_id+">加入试卷</a>");
+                                var reCheck = $("<a href='javascript:void(0)' class='reCheck' id="+sub_id+">重新审核</a>");
+                                $("div[id='"+sub_id+"']").prepend(addInExamPaper);
+                                $("div[id='"+sub_id+"']").append(reCheck);
+                                break;
+                            
+                        //case "审核不通过":
+                        case "审核不通过":
+                            $.ajax('exam/manager/uncheckSubject',{
+                                method:"post",
+                                data:{"subjectId":sub_id},
+                                success:function(retu){
+                                    alert("第"+sub_id+"道题，审核"+retu);//在XXXRoutes.js文件中调用方法时定义-var retu="审核成功"
+                                }
+                            }
+                            );
+                                break;
+                        //case "删除题目":
+                        case "删除题目":
+                            // alert("尚未完成此功能");
+                            $.ajax('exam/manager/deleteSubject',{
+                                method:"post",
+                                data:{"subjectId":sub_id},
+                                success:function(retu){
+                                    alert("第"+sub_id+"道题，已"+retu);//在XXXRoutes.js文件中调用方法时定义-var retu="审核成功"
+                                }
+                            }
+                            );
+                                break;
+                                break;
+
+                        case "加入试卷":
+                            alert("尚未完成此功能");
+                                break;
+
+                        case "重新审核":
+                                $.ajax('exam/manager/recheckSubject',{
+                                method:"post",
+                                data:{"subjectId":sub_id},
+                                success:function(retu){
+                                    alert("第"+sub_id+"道题，"+retu);//在XXXRoutes.js文件中调用方法时定义-var retu="审核成功"
+                                }
+                            });
+                            $(this).parent().empty();
+                            var checkA = $("<a href='javascript:void(0)' class='check'>审核通过</a>");
+                            var uncheckA = $("<a href='javascript:void(0)' class='uncheck'>审核不通过</a>");
+                            var deleteA = $("<a href='javascript:void(0)' class='delete'>删除题目</a>");
+                                $("div[id='"+sub_id+"']").prepend(checkA);
+                                $("div[id='"+sub_id+"']").append(uncheckA);
+                                $("div[id='"+sub_id+"']").append(deleteA);
+                                break;
+                    }
+                });
+        //++++++++++++++++++++++++++++++++++++++++++++++++++++++
+             
+        } );
+    }
+
+
+    //【①-2】
+    function showChoice(Data){//空数组要声名在for循环外面，否则每次循环都会初始化，然后即使在arr[c]里添加了对应的值，其他值也都是undefined了= =
+        //空数组
+        var choice_subject_id;//var choice_subject_id=[];
+        var choiceContent=[];//choiceContent[选项的内容]
+        var choiceCorrect=[];//choiceCorrect[选项的正误]【其中，正误这一项的值也是一个数组，具有type和data两项。我们要取的是data】
+  //【从item中取出信息的每一项，拼入数组，再遍历数组。你当item这个表示一个选项信息的对象是死的吗= =】
+  //【在chock函数里改进：】【以下循环为绝对的多此一举OTZ】
+        for(var c=0;c<Data.length;c++){
+          //一个于数组同名(划掉)【不能同名= = 类似即可】的对象，用来接收数组的每一项 
+          //接收选项的内容
+            var choice_content =Data[c].content;
+                    //var choiceCorrect=Data[c].correct;
+                    //【笨方法：一步一步分析，先取出correct，打印看一下格式[{type:'XXX''}]，见其中data项的值是个数组，
+                    //而我们要的正误判定是这个数组的第一项，可取出↓】
+                    //var choiceData=choiceCorrect.data[0];【然后整合一下】
+          //接收每一选项的正误
+            var choice_correct=Data[c].correct.data[0];
+
+          //获取题目的id【如何使用呢= =】
+            choice_subject_id=Data[c].subject_id; 
+          //得到纯粹的，选项内容和正误的两个数组 
+            choiceContent[c]=choice_content;//console.log("c",c,"  data数组中每一项即各个选项的内容：",choice_content);
+            choiceCorrect[c]=choice_correct;//console.log("c",c,"  data数组中每一项即各个选项的正误：",choice_correct);
+        }//for循环结束
+      //遍历，获取每一个选项内容。遍历后可以将每一个选项都加到题干后。顺带可以得到对应索引的正误判断，为元素添加样式
+        choiceContent.forEach( function(item,index){//console.log("choiceContent内容-item:",item);
+            //获取-题目题干信息，作为一个元素，添加到【<span>】之后+之后
+          //获取A.B.C.D.
+            var ABC=(index==0?'A':(index==1?'B':(index==2?'C':(index==3?'D':(index==4?'E':(index==5?'F':'G'))))));
+            //console.log("choice_subject_id["+index+"]:",choice_subject_id[index]);
+            var Content = $("<p id='Content' class="+ choice_subject_id+">"+ABC+". "+item+"</p>");
+          //同一索引在两个数组中，表示的是同一个选项的选项内容何正误情况，故这里的index可以给另一个数组使用
+                if(choiceCorrect[index]==1){
+                    Content.css("color","red");}
+                   //【开始将下面这些代码写在了forEach之外，结果很糟糕【其中的原因以及写进来的不同之处？？？？】】
+            //以上，得到了一个表示单个选项的元素：Content//console.log(Content);
+            // $("span[class='"+choice_subject_id+"']").append("p[class='"+choice_subject_id+"']");
+          //动态地通过题目的id-确定-这道题的每个选项-要追加上的<span>
+            $("span[class='"+choice_subject_id+"']").append(Content);
+        
+
+    //【这里 无法对简答题进行审核OTZ】
+        //审核功能测试= =【每个div的按键与题目的id成功绑定！！】
+            //console.log("???为什么会打四遍???都是谁打的？？？",choice_subject_id);//【由此可知，这样还是没能帮到单独的div= =】
+            $("span[class='"+choice_subject_id+"']").parent().parent().find(".Catalogcontentdown").off("click");
+            //$("span[class='"+choice_subject_id+"']").parent().parent().find(".Catalogcontentdown").on("click",'a',function(){alert("choice_subject_id:"+choice_subject_id+"  【单选和多选的审核按钮】绑定a成功")});
+            $("span[class='"+choice_subject_id+"']").parent().
+            parent().find(".Catalogcontentdown").attr("id",choice_subject_id)//添加变量时不加引号即可= =【大概会class绑定了样式，所以绑在id上好了】
+            .on("click",'a',function(){//【这里，已经选中被点击的那个按钮。不需要再遍历什么的】
+                var sub_id=choice_subject_id;//【设置一个变量，方便使用题id
+                //alert("choice_subject_id:"+choice_subject_id+"  绑定a成功");
+                //alert(sub_id + $(this).html());//弹出题号【被点击div绑上的题id】+按钮上的文字【this：指向当前出发点击事件的元素】
+                switch($(this).html()){
+                    case "审核通过":
+                        //选到了已审核按钮：如何调用后台审核方法？
+                        //要传递的数据？【后台方法：通过题号，确定要修改的那条数据
+                        $.ajax('exam/manager/checkSubject',{
+                            method:"post",
+                            data:{"subjectId":sub_id},
+                            success:function(retu){
+                                //console.log("checkSubject-data:",retu);
+                                // alert("审核成功");
+                                alert("第"+sub_id+"道题，审核"+retu);
+                            }
+                        }
+                        );
+                     //【我的思路】审核通过后要把三个按钮移除，换成“加入试卷”
+                                //通过当前点击的按钮，A【找父元素】，B.清空子元素，C.换成新的a标签“加入试卷”
+                                //找父元素方法①//$(this).parent().on('click',function(){alert("父元素")});
+                            $(this).parent().empty();
+                                //找父元素方法②//【咳，原本想找完class找id，发现写不来= =】div.find(".Catalogcontentdown")
+                                    //方法③ 将题号参合进去【其实这样也不太好，毕竟父元素能不设置id也好，别日后样式需要这一属性】 
+                                    //$("div[id='"+sub_id+"']").empty();
+
+                            //【C.】获得一个新的a标签
+                                //方法①：克隆clone   //var XXX=$('tr:hidden').clone().removeAttr('hidden');
+                                //var addInExamPaper = 
+                                //方法②：新建一个元素
+                                    // var Content = $("<p id='Content' class="+ choice_subject_id+">"+ABC+". "+item+"</p>");
+                            var addInExamPaper = $("<a href='javascript:void(0)' class='addExam' id="+sub_id+">加入试卷</a>");
+                            var reCheck = $("<a href='javascript:void(0)' class='reCheck' id="+sub_id+">重新审核</a>");
+                            $("div[id='"+sub_id+"']").prepend(addInExamPaper);
+                            $("div[id='"+sub_id+"']").append(reCheck);
+                        //【我的方法到后期似乎会有些麻烦。首先，再次刷新，已经审核的题目还是会把三个按钮都显示出来= =】【在shouData方法里进行修改】
+                        
+                        //【老师的思路】设置两个div的显示
+                        //$(this).parent().css("display","none");           
+                        //$(this).parent().next().css("display","block");
+                            break;
+                        
+
+                    //case "审核不通过":
+                    case "审核不通过":
+                        $.ajax('exam/manager/uncheckSubject',{
+                            method:"post",
+                            data:{"subjectId":sub_id},
+                            success:function(retu){
+                                alert("第"+sub_id+"道题，审核"+retu);//在XXXRoutes.js文件中调用方法时定义-var retu="审核成功"
+                            }
+                        }
+                        );
+                            break;
+                    //case "删除题目":【按照模板 一举成功_(:зゝ∠)_】
+                    case "删除题目":
+                        alert("尚未完成此功能");
+                            break;
+                //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= 
+                    case "加入试卷":
+                        alert("尚未完成此功能");
+                            break;
+
+                    case "重新审核":
+                            $.ajax('exam/manager/recheckSubject',{
+                            method:"post",
+                            data:{"subjectId":sub_id},
+                            success:function(retu){
+                                alert("第"+sub_id+"道题，"+retu);//在XXXRoutes.js文件中调用方法时定义-var retu="审核成功"
+                            }
+                        });
+                        $(this).parent().empty();
+                        var checkA = $("<a href='javascript:void(0)' class='check'>审核通过</a>");
+                        var uncheckA = $("<a href='javascript:void(0)' class='uncheck'>审核不通过</a>");
+                        var deleteA = $("<a href='javascript:void(0)' class='delete'>删除题目</a>");
+                            $("div[id='"+sub_id+"']").prepend(checkA);
+                            $("div[id='"+sub_id+"']").append(uncheckA);
+                            $("div[id='"+sub_id+"']").append(deleteA);
+                            break;
+                }
+            });
+        });
+        //【出错的位置】【好像只取到了每一题选项中的D选项【使遍历失去了意义？】】
+    }
+
+
+
+
+
+
+
+
+
+
+
+            
+
+
+
+
+</script>
+  <!-- <style>
+.chose{ margin-left:5px; margin-right: 5px;}
+.chose a{color: #4e4c4c; padding:3px 10px 3px 10px;}.chose a:hover{color:#009241;}
+.chose a.active3{ color:#ffffff; border:1px solid #41810a;background-color: #6ca620;-moz-border-radius:2px;-webkit-border-radius:2px; border-radius:2px;  }
+</style>   -->

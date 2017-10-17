@@ -1,0 +1,346 @@
+﻿plusYU521
+1. 获取所有题目类型                       【管理者】
+	URL   :http://127.0.0.1:8888/exam/manager/getAllSubjectType
+	params:
+		none
+	return:
+		[{
+			"id":1,
+			"name":"radio",
+			"realName":"单选题"
+		},{
+			"id":2,
+			"name":"check",
+			"realName":"多选题"
+		},{
+			"id":3,
+			"name":"question",
+			"realName":"简答题"
+		}]
+2. 获取所有题目难度级别
+	URL:
+		http://127.0.0.1:8888/exam/manager/getAllSubjectLevel
+	params:
+		none
+	return:
+		[{
+			"id":1,
+			"name":"easy",
+			"realName":"简单"
+		},{
+			"id":2,
+			"name":"medium",
+			"realName":"中等"
+		},{
+			"id":3,
+			"name":"difficult",
+			"realName":"难"
+		}]
+3. 获取所有的方向
+	URL:
+		http://127.0.0.1:8888/exam/manager/getAllDepartmentes
+	params:
+		none
+	return:
+		[{
+			"id":1,
+			"name":"WebUI"
+		},{
+			"id":2,
+			"name":"JavaEE"
+		},{
+			"id":3,
+			"name":"Android"
+		},{
+			"id":5,
+			"name":"IOS"
+		}]
+4. 获取所有的知识点
+	URL:
+		http://127.0.0.1:8888/exam/manager/getAllTopics
+	params:
+		none
+	return:
+		[{
+			"id":1,
+			"title":"HTML",
+			"department":{
+				"id":1,
+				"name":"WebUI"
+			}
+		},{
+			"id":2,
+			"title":"Javascript",
+			"department":{
+				"id":1,
+				"name":"WebUI"
+			}
+		},{
+			"id":3,
+			"title":"CSS",
+			"department":{
+				"id":1,
+				"name":"WebUI"
+			}
+		},{
+			"id":4,
+			"title":"CoreJava",
+			"department":{
+				"id":2,
+				"name":"JavaEE"
+			}
+		}]
+5. 根据方向id获取该方向下的所有知识点
+	URL:
+		http://127.0.0.1:8888/exam/manager/getDepartmentTopics
+	params:
+		topic.department.id
+	return:
+		[{
+			"id":1,
+			"title":"HTML"
+		}]
+6. 保存题目信息
+	URL:
+		http://127.0.0.1:8888/exam/manager/saveSubject
+	params:
+	{
+		subject.subjectType.id			2
+	 	subject.subjectLevel.id			3
+	 	subject.department.id			1
+	 	subject.topic.id			1
+	 	subject.stem				""
+	 	subject.answer				""
+	 	subject.analysis			""
+	 	
+	 	choiceContent:	["choice1","choice2","choice3"]
+	 	choiceCorrect:	[true,true,false]
+	 }               
+	return:
+		none
+7. 查询所有题目信息
+	URL:
+		http://127.0.0.1:8888/exam/manager/getAllSubjects
+		subject.department.id			方向id
+	 	subject.topic.id			知识点id
+	 	subject.subjectType.id			类型id
+	 	subject.subjectLevel.id			级别id
+	 	subject.stem				题干
+	return
+		[{
+			"id":1,
+			"examPaper":null,
+			"uploadTime":"2016-09-21",
+			"user":null,
+			"analysis":"f",
+			"answer":"",
+			"checkState":"未审核",
+			"stem":"以下选项哪个不是Corejava中数据类型？",
+			"department":{
+				"id":2,
+				"name":"JavaEE"
+			},
+			"subjectLevel":{
+				"id":1,
+				"name":"easy",
+				"realName":"简单"
+			},
+			"subjectType":{
+				"id":2,
+				"name":"check",
+				"realName":"复选题"
+			},
+			"topic":{
+				"id":4,
+				"title":"CoreJava",
+				"department":{
+					"id":2,
+					"name":"JavaEE"
+				}
+			},
+			"choices":[{
+					"id":1,
+					"content":"int",
+					"correct":true
+				},{
+					"id":2,
+					"content":"number",
+					"correct":false
+				},{
+					"id":3,
+					"content":"string",
+					"correct":false
+				},{
+					"id":4,
+					"content":"float",
+					"correct":true
+			}]
+		},{
+			"id":2,
+			"examPaper":null,
+			"uploadTime":"2016-09-22",
+			"user":null,
+			"analysis":"分析",
+			"answer":"",
+			"stem":"ECMASCript中typeof的取值有哪些？",
+			"department":{
+				"id":1,
+				"name":"WebUI"
+			},
+			"subjectLevel":{
+				"id":1,
+				"name":"easy",
+				"realName":"简单"
+			},
+			"subjectType":{
+				"id":2,
+				"name":"check",
+				"realName":"复选题"
+			},
+			"topic":{
+				"id":2,
+				"title":"Javascript",
+				"department":{
+					"id":1,
+					"name":"WebUI"
+				}
+			},
+			"choices":[{
+					"id":5,
+					"content":"int",
+					"correct":false
+				},{
+					"id":6,
+					"content":"number",
+					"correct":true
+				},{
+					"id":7,
+					"content":"string",
+					"correct":true
+				},{
+					"id":8,
+					"content":"NaN",
+					"correct":false
+			}]
+		}]
+8. 通过ID删除题目
+	URL:
+		http://127.0.0.1:8888/exam/manager/delSubject
+	params 
+		subject.id		要删除的题目id
+	return
+		null
+9. 审核题目
+	URL:
+		http://127.0.0.1:8888/exam/manager/checkSubject
+	params 
+		subject.id			要审核的题目id
+		subject.checkState	审核是否通过  "通过"/"不通过"
+	return
+		null
+
+10. 获取所有学生信息
+	http://127.0.0.1:8888/exam/manager/getAllStudents
+
+11. 保存学生信息
+	URL:
+		http://127.0.0.1:8888/exam/manager/saveStudent
+	params:
+		name
+		age
+		gender
+
+12. 保存试卷信息
+	URL:
+		http://127.0.0.1:8888/exam/manager/saveExamPaper
+	params 
+		{
+			paper.department.id	
+		 	paper.title
+		 	paper.description
+		 	paper.totalPoints
+		 	paper.answerQuestionTime
+		
+		 	scores 		[2,4,5,2]
+		 	subjectIds 	[1,2,3,4]
+		}
+	return
+		null
+13. 根据试卷ID查找试卷
+	URL:
+		http://127.0.0.1:8888/exam/manager/getExamPaperById
+	params 
+		paper.id
+	return
+	
+14. 查询所有试卷信息
+	URL:
+		http://127.0.0.1:8888/exam/manager/getAllExamPapers
+	params 
+		null
+	return
+		[
+		    {
+		    	"id": 1, 
+		        "title": "HTML阶段测试", 
+		        "description": "这个测试十分关键", 
+		        "answerQuestionTime": 1, 
+		        "totalPoints": 100, 
+		        "createTime": null, 
+		        "department": {
+		            "id": 1, 
+		            "name": "WebUI"
+		        }, 
+		        "type": "", 
+		        "user": null,
+		        "paperSubjects": [
+		            {
+		                "id": 2, 
+		                "stem": "以下哪个不是angular的服务创建方式", 
+		                "type": "复选题", 
+		                "level": "复选题", 
+		                "topic": "HTML", 
+		                "score": 30
+		            }, 
+		            {
+		                "id": 4, 
+		                "stem": "以下哪种是Java中的访问修饰符", 
+		                "type": "复选题", 
+		                "level": "复选题", 
+		                "topic": "HTML", 
+		                "score": 20
+		            }, 
+		            {
+		                "id": 1, 
+		                "stem": "aaaaa", 
+		                "type": "单选题", 
+		                "level": "单选题", 
+		                "topic": "HTML", 
+		                "score": 20
+		            }, 
+		            {
+		                "id": 3, 
+		                "stem": "Java中有哪些数据类型", 
+		                "type": "复选题", 
+		                "level": "复选题", 
+		                "topic": "HTML", 
+		                "score": 10
+		            }
+		        ], 
+		        
+		    }
+		]
+	
+	 
+
+
+
+
+
+
+
+
+
+
+
+
