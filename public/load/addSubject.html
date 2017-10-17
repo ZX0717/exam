@@ -177,36 +177,59 @@ $(function(){
         var type=$("select[name='type']").val();
         var department=$("select[name='department']").val();
         var LEVEL=$("select[name='level']").val();
-    console.log("LEVEL-LEVEL-LEVEL：：："+LEVEL);
+    //console.log("LEVEL-LEVEL-LEVEL：：："+LEVEL);
     //level取不到 ?? 【= 1-4】
         var topic=$("select[name='topic']").val();
         var stem=$("textarea[name='stem']").val();
         var analysis = $("textarea[name='analysis']").val();
-        
-        //每个选项的内容
-        var choiceContents = new Array();
-        $("textarea[name='choiceContent']").each(function(index,item){
-            choiceContents[index]=$(item).val();
-        })
-        //将单选和多选的选项的数组转化为字符串
-       var choiceContent = choiceContents.toString();
-       //每个选项的正确与否
-        var correct=[];
-        if(type==1){
-            $(":radio[name='answer']").each(function(index,item){
-                correct[index]=$(item).prop("checked");
-            })
-        }else{
-            $(":checkbox[name='answer']").each(function(index,item){
-                correct[index]=$(item).prop('checked');
-            })
+
+/*
+,,,【这里，是没考虑简答题的情况，直接将answer全部交付choiceContents选项数组，而完全没有取简答题填答案那个框中的数据，
+使得即使是简答题，直接提交得到的“答案”也是choiceContents空数组。
+    解决方法：在得到页面数据后，对type进行判断，为4则choiceContent[选项字符串]=框中的文字。
+        若type=2,3，将choiceContents设为空数组，choiceContents为choiceContent的字符串转换结果。并且对选项正误进行操作。】
+            【然后简答题不需要操作选项表。所以在从后台得到包含新添题目的id的数组arr后，再进行判断，
+                【若为单多选，调用addSubChoice方法，传递参数】【
+                若为简答，在这一步，自行遍历取出arr中的id【反正在后台取出再传到前端会出问题= =】，就可以弹窗显示题目添加成功了】。
+*/
+
+
+        if(type==4){
+            var choiceContent = $("textarea[name='answer']").val();
+            //console.log("choiceContent答案`字符串+++++++++：：："+choiceContent);
+
+        }else if(type==2||type==3){
+            //每个选项的内容
+                var choiceContents = new Array();
+                $("textarea[name='choiceContent']").each(function(index,item){
+                    choiceContents[index]=$(item).val();
+                })
+                //将单选和多选的选项的数组转化为字符串
+                var choiceContent = choiceContents.toString();
+                    //console.log("choiceContents答案+++++++++：：："+choiceContents);
+                    //console.log("choiceContent答案`字符串+++++++++：：："+choiceContent);
+            
+            //每个选项的正确与否
+                var correct=[];
+                if(type==2){
+                    $(":radio[name='answer']").each(function(index,item){
+                        correct[index]=$(item).prop("checked");
+                    })
+                }else{
+                    $(":checkbox[name='answer']").each(function(index,item){
+                        correct[index]=$(item).prop('checked');
+                    })
+                }
+                //将正确选项转为为0,1，并存入数组
+                var correctChoices = [];
+                correct.forEach(function(item){
+                    var newitem = Number(item);
+                    correctChoices.push(newitem);
+                })            
         }
-        //将正确选项转为为0,1，并存入数组
-        var correctChoices = [];
-        correct.forEach(function(item){
-            var newitem = Number(item);
-            correctChoices.push(newitem);
-        })
+        //console.log("correctChoices选项-数组+++++++++：：："+correctChoices);
+        //console.log("correctChoices答案`字符串+++++++++：：："+choiceContent);
+
 
 //将页面的数据添加到数据库
         $.ajax("exam/manager/saveSubject",{
@@ -221,13 +244,26 @@ $(function(){
                     "choiceContent":choiceContent,
                     "checkState":"未审核",
                     "choiceContents":choiceContents,
-                    "choiceCorrect":correctChoices
+                    //把两个名字统一 = =
+                    "correctChoices":correctChoices
             },
             success:function(arr){
-                addSubChoice(arr);
+                //console.log("从后台取到的id：",arr);
+                if(type==2||type==3){
+                    addSubChoice(arr,choiceContents,correctChoices);
+                }else if(type==4){
+                    //【这里，简答题取不到答案？？？？？】
+                        var subId=arr;
+                        subId.forEach(function(item,index){
+                            //取出[{'id':XXX}]中的XXX   【直接用数组[0].id idundefined。不知为何 但遍历可以。反正横竖找出来的就是一道题】
+                            subjectId= item.id;
+                            //console.log(subjectId);
+                        })
+                    alert("第"+subjectId+"题，添加成功!");
+                }
+                
             }
         })
-        //queryOneNewSubId(stem2,dep2,level2,types2,topic2,analysis2,choiceContent2,checkState2,choiceContents2,choiceCorrect2);
 
         return false;
     })
@@ -245,53 +281,39 @@ $(function(){
     })
 
 })
-
-// function queryOneNewSubId(stem2,dep2,level2,types2,topic2,analysis2,choiceContent2,checkState2,choiceContents2,choiceCorrect2){
+// function queryOneNewSubId(stem2,dep2,level2,types2,topic2,analysis2,choiceContent2,checkState2,choiceContents2,correctChoices2){
 //     //查询获取刚刚添加的题目id
-//         //【把Id补上啊喂！！！！！！！】
+//         //【把Id补上啊喂！！！！！！！----------↓】
 //     $.ajax("exam/manager/queryOneNewSubjectId",{
 //         method:"post",
 //         data:{
-//             "stem3":stem2,
-//             "dep3":dep2, 
-//             "level3":level2,
-//             "types3":types2,
-//             "topic3":topic2,
-//             "analysis3":analysis2, 
-//             "choiceContent3":choiceContent2,//选项内容-字符串
-//             "checkState3":checkState2,
-//             "choiceContents3":choiceContents2,//选项内容【数组？】
-//             "choiceCorrect3":choiceCorrect2//选项正误判断
 //         },
-//         success:function(data,choiceContents3,choiceCorrect3){
+//         success:function(data,choiceContents3,correctChoices3){
 //             //从后台取到三个参数，传入addSubChoice 用于添加每一个选项
-//             addSubChoice(data,choiceContents3,choiceCorrect3);
+//             addSubChoice(data,choiceContents3,correctChoices3);
 //         }
 //     });
 // }
-
-function addSubChoice(arr){
-    console.log("从添加题目的方法中得到的data：",arr);  
-    console.log("从后台获取的新添题目的id值queryID-addSubChoice",arr[0]);//取出的是一个数组，第一项也是唯一一项是一个对象=[{id:XXX}]//对其遍历
-    console.log("从后台获取的新添题目的选项内容组成的数组-choiceContents",arr[1]);
-    console.log("从后台获取的新添题目的选项正误组成的数组-choiceCorrect",arr[2]);
-    var subId=arr[0];
-    var choiceContents=arr[1];
-    var choiceCorrect=arr[2];
-
+//【这里，形参的个数，还是根据[$.ajax("exam/manager/saveSubject",{]-[success:function(arr){-[ addSubChoice(arr,choiceContents,correctChoices);]确认]】
+function addSubChoice(arr,choiceContents,correctChoices){
+    //console.log("从添加题目的方法中得到的data：",arr);  
+    //console.log("从后台获取的新添题目的id值queryID-addSubChoice",arr[0]);//取出的是一个数组，第一项也是唯一一项是一个对象=[{id:XXX}]//对其遍历
+    var subId=arr;
     subId.forEach(function(item,index){
         //取出[{'id':XXX}]中的XXX   【直接用数组[0].id idundefined。不知为何 但遍历可以。反正横竖找出来的就是一道题】
-        var subjectId= item.id;
+        subjectId= item.id;
+        //console.log(subjectId);
     })
+    //【将三个参数传给后台，执行插入选项表的操作】
         $.ajax("exam/manager/addSubjectChoice",{
                 method:"post",
                 data:{
                     "subjectId":subjectId,
                     "choiceContents":choiceContents,//选项内容
-                    "choiceCorrect":choiceCorrect//选项正误判断
+                    "correctChoices":correctChoices//选项正误判断
                 },
-                success:function(retu){
-                    alert(retu+"!");
+                success:function(retu){//【接受插入完成后传回前端的一个对象/字符串，形成弹框】
+                    alert("第"+subjectId+"题，"+retu+"!");
                 }
             });
 }

@@ -67,7 +67,7 @@ subjectRoute.post('/querySubject',function(req,resp){
     //subjectRoute.get('/querySubject',function(req,resp){
     //???????????
     var queryInfo = req.body;
-console.log("queryInfo:",req.body);
+//console.log("queryInfo:",req.body);
 /*这里的打印，打印在输入运行项目命令行的那个窗口里。当网页上有什么操作调用了这里的方法，后台显示：*/
     var direct=queryInfo["subject.department.id"]; 
     var topic=queryInfo["subject.topic.id"]; 
@@ -78,132 +78,7 @@ console.log("queryInfo:",req.body);
     subjectDB.querySubject(direct,level,type,topic).then(function(data){
     /*[subjectRoute.get]
     subjectDB.querySubject(2,2,2,2).then(function(data){*/
-console.log("data666666666666666666666666",data);//貌似好像并没有调用这个打印【当操作筛选按钮，还是打印了的_(:зゝ∠)_】
-/*
-queryInfo: { 'subject.department.id': '1',
-  'subject.topic.id': '1',
-  'subject.subjectType.id': '2',
-  'subject.SubjectLevel.id': '1' }
-释放完成
-data666666666666666666666666 []
-POST /exam/manager/querySubject 200 145.659 ms - 2
-queryInfo: { 'subject.department.id': '1',
-  'subject.topic.id': '1',
-  'subject.subjectType.id': '2',
-  'subject.SubjectLevel.id': '2' }
-释放完成
-data666666666666666666666666 []
-POST /exam/manager/querySubject 200 3.353 ms - 2
-queryInfo: { 'subject.department.id': '2',
-  'subject.topic.id': '1',
-  'subject.subjectType.id': '2',
-  'subject.SubjectLevel.id': '2' }
-释放完成
-data666666666666666666666666 []
-POST /exam/manager/querySubject 200 3.269 ms - 2
-queryInfo: { 'subject.department.id': '2',
-  'subject.topic.id': '2',
-  'subject.subjectType.id': '2',
-  'subject.SubjectLevel.id': '2' }
-释放完成
-data666666666666666666666666 [ RowDataPacket {
-    id: 23,
-    analysis: '000111111',
-    answer: 'aa,bb,cc,dd',
-    checkState: '未审核',
-    stem: '单选0001111111111',
-    uploadTime: null,
-    department_id: 2,
-    subjectLevel_id: 2,
-    subjectType_id: 2,
-    topic_id: 2,
-    user_id: null },
-  RowDataPacket {
-    id: 33,
-    analysis: 'A2A2',
-    answer: 'A1,A2,A3,A4',
-    checkState: '未审核',
-    stem: '单选AAAAA222222222',
-    uploadTime: null,
-    department_id: 2,
-    subjectLevel_id: 2,
-    subjectType_id: 2,
-    topic_id: 2,
-    user_id: null },
-  RowDataPacket {
-    id: 34,
-    analysis: 'B2B2',
-    answer: '999,888,777,666',
-    checkState: '未审核',
-    stem: '同类单选BBBBBB22222222',
-    uploadTime: null,
-    department_id: 2,
-    subjectLevel_id: 2,
-    subjectType_id: 2,
-    topic_id: 2,
-    user_id: null },
-  RowDataPacket {
-    id: 39,
-    analysis: 'B2B2',
-    answer: '999,888,777,666',
-    checkState: '未审核',
-    stem: '同类【待删】单选BBBBBB2222222290000000',
-    uploadTime: null,
-    department_id: 2,
-    subjectLevel_id: 2,
-    subjectType_id: 2,
-    topic_id: 2,
-    user_id: null },
-  RowDataPacket {
-    id: 41,
-    analysis: 'B2B2',
-    answer: '999,888,777,666',
-    checkState: '未审核',
-    stem: '同类【待删】单选BBBBBB22222222922222222',
-    uploadTime: null,
-    department_id: 2,
-    subjectLevel_id: 2,
-    subjectType_id: 2,
-    topic_id: 2,
-    user_id: null },
-  RowDataPacket {
-    id: 61,
-    analysis: '22222',
-    answer: '1,1,1,1',
-    checkState: '未审核',
-    stem: '22222',
-    uploadTime: null,
-    department_id: 2,
-    subjectLevel_id: 2,
-    subjectType_id: 2,
-    topic_id: 2,
-    user_id: null },
-  RowDataPacket {
-    id: 62,
-    analysis: '333',
-    answer: '1,1,1,1',
-    checkState: '未审核',
-    stem: '333',
-    uploadTime: null,
-    department_id: 2,
-    subjectLevel_id: 2,
-    subjectType_id: 2,
-    topic_id: 2,
-    user_id: null },
-  RowDataPacket {
-    id: 78,
-    analysis: '3345666',
-    answer: '222,23,2224,2225',
-    checkState: '未审核',
-    stem: '3434343',
-    uploadTime: null,
-    department_id: 2,
-    subjectLevel_id: 2,
-    subjectType_id: 2,
-    topic_id: 2,
-    user_id: null } ]
-
-*/
+//console.log("data666666666666666666666666",data);//貌似好像并没有调用这个打印【当操作筛选按钮，还是打印了的_(:зゝ∠)_】
         resp.send(data);
     }).catch(function(error){
         resp.send(error);
@@ -280,10 +155,18 @@ subjectRoute.post('/recheckSubject',function(req,resp){
 );
 
 //根据题目id 对题目进行删除
+//【注意，删除也要删除选项表中的数据】
+//【【删除，是先删除选项表，才能删除题目】】
+//【删除前先取到题目id，再取到题目的选项(如果有的话):
+//取answer，如果有逗号，将字符串转成数组，再foreach，挨个取出，
+//通过三个参数，经过一个方法【待写】，从表中找出这条数据，删除。】
    subjectRoute.post('/deleteSubject',function(req,resp){
         var queryInfo = req.body;
         var subjectId=queryInfo["subjectId"];
-        subjectDB.checkSubject(subjectId).then(
+        //【这里是调用方法，写的是什么鬼= =】【复制造成的自己挖坑自己挑= =】
+        //subjectDB.checkSubject(subjectId).then(
+        subjectDB.deleteSubject(subjectId).then(
+            
             function(){var retu="删除";resp.send(retu);
         }).catch(function(error){
             resp.send(error);
@@ -291,6 +174,16 @@ subjectRoute.post('/recheckSubject',function(req,resp){
     } 
     );
 
+   subjectRoute.post('/deleteChoice',function(req,resp){
+        var queryInfo = req.body;
+        var subjectId=queryInfo["subjectId"];
+        subjectDB.deleteChoice(subjectId).then(
+            function(){var retu="所有选项删除";resp.send(retu);
+        }).catch(function(error){
+            resp.send(error);
+        });
+    } 
+    );
 
 //================================================================================================================================
 /*⑥-【添加题目页面的方法】----------------------------------------------*/
@@ -312,46 +205,24 @@ subjectRoute.post('/recheckSubject',function(req,resp){
         //这里是数组= =
             var choiceContents = queryInfo["choiceContents[]"]; 
         console.log("choiceContents选项内容`数组=======",choiceContents);
-            var choiceCorrect = queryInfo["choiceCorrect[]"]; 
-        console.log("choiceCorrect选项正误`数组=======",choiceCorrect);     
-        // /*
-        // level!!!=============== 2
-        // choiceContent选项内容`字符串======= 222,23,2224,2225
-        // choiceContents选项内容`数组======= [ '222', '23', '2224', '2225' ]
-        // choiceCorrect选项正误`数组======= undefined
-        // */
-// /*
-// level!!!=============== 1
-// choiceContent选项内容`字符串======= 45454,5454,54545,454545
-// choiceContents选项内容`数组======= [ '45454', '5454', '54545', '454545' ]
-// choiceCorrect选项正误`数组======= [ '0', '0', '0', '1' ]
-// 【XXDB.js文件中的addSubject方法打印的：】添加题目的参数： stem: ----------- ,dep: 1 ,level: 1 ,types: 1 ,topic: 1 ,analysis: 656565656 ,choiceContent: 45454,5454,54545,454545 ,checkState: 未审核
-// 释放完成
-//【看样子完全没有执行queryOneNewSubjectId  OTZ】
+            var correctChoices = queryInfo["correctChoices[]"]; 
+        console.log("correctChoices选项正误`数组=======",correctChoices);     
 
-// level!!!=============== 2
-// choiceContent选项内容`字符串======= 667,7,6,777
-// choiceContents选项内容`数组======= [ '667', '7', '6', '777' ]
-// choiceCorrect选项正误`数组======= undefined
-// 添加题目的参数： stem: 676767676 ,dep: 2 ,level: 2 ,types: 2 ,topic: 2 ,analysis: 76767676767 ,choiceContent选项内容-字符串状态: 667,7,6,777 ,checkState: 未审核 ,choiceContents选项内容-数组: [ '667', '7', '6', '777' ] ,choiceCorrect选项正误: undefined
-//POST /exam/manager/saveSubject 500 298.776 ms - 1259【报错 题目插入成功】
-// */                                                                                        //<方法C>为了传递参数：将choiceContents,choiceCorrect也传过去
-            subjectDB.addSubject(stem,dep,level,types,topic,analysis,choiceContent,checkState,choiceContents,choiceCorrect).then(
+                                                              //<方法C>为了传递参数：将choiceContents,choiceCorrect/correctChoices也传过去
+            subjectDB.addSubject(stem,dep,level,types,topic,analysis,choiceContent,checkState,choiceContents,correctChoices).then(
                 //<方法C>接收返回值：[id,[XX,XX,XX,XXX],[0,1,0,0]]
+                //【从打印的结果看，接接收到的newId+++++++ Promise { <pending> }】
+                //【看样子这个函数只能传递【return 执行sql2】一个结果= =】
                 function(arr){
-                    resp.send(arr);
-            // console.log("【把添加题目的参数作为查找题目id方法的参数】",'stem2:',stem2,',dep2:',dep2,',level2:',level2,',types2:',types2,',topic2:',topic2,',analysis2:',analysis2,',choiceContent2:',choiceContent2,',checkState2:',checkState2,',choiceContents2:',choiceContents2,',choiceCorrect2:',choiceCorrect2);
-//[前面还有一段打印，见addSubject方法]【把添加题目的参数作为查找题目id方法的参数】 stem2: 3434343 ,dep2: 2 ,level2: 2 ,types2: 2 ,topic2: 2 ,analysis2: 3345666 ,choiceContent2: 222,23,2224,2225 ,checkState2: 未审核 ,choiceContents2: [ '222', '23', '2224', '2225' ] ,choiceCorrect2: undefined
-// 从这些打印的内容看，代码就执行到添加题目这里。之后没能进行下去。
-//【此时，<方法B>将[$.ajax("exam/manager/queryOneNewSubjectId",{]放在[$.ajax("exam/manager/saveSubject",{]的[success:function()]里 】需要做出调整，试图找出问题OTZ    
-//原先<方法A>试图将[$.ajax("exam/manager/saveSubject",{]传到后台的数据，经过resp.send传到前台。但打印出来的额东西和从页面获取的数据已经无关了。不知为何。此法弃用。             
-                // resp.send(stem2,dep2,level2,types2,topic2,analysis2,choiceContent2,checkState2,choiceContents2,choiceCorrect2);
+                    //console.log(arr);
+                    resp.send(arr);           
+                // resp.send(stem2,dep2,level2,types2,topic2,analysis2,choiceContent2,checkState2,choiceContents2,correctChoices2);
                 }).catch(function(error){
                     resp.send(error);
                 })
             });
 
-        /*<方法C>将使用相同参数的添加数据与查找新添题目id两个合在一起。【目前还不知道能否成功】
+        /*<方法C>将使用相同参数的添加数据与查找新添题目id两个合在一起。【目前还不知道能否成功】【成功啦O(∩_∩)O】
         //【根据新添加的题目信息，希望确定这个新添题目的id】----------------------------------------
             subjectRoute.post('/queryOneNewSubjectId',function(req,resp){
                 var queryInfo = req.body;
@@ -359,17 +230,17 @@ subjectRoute.post('/recheckSubject',function(req,resp){
 
 
 //-------------------------------------------------------------------------------------------
-//【【接受三个参数：一个新添题目的id，两个数组】
+//【【接受三个参数：一个新添题目的id，两个数组】【这三个参数，id是个从后台执行sql代码后返回的值，传到前端，再作为参数，再传到这里】【另外两个数组是在作为参数时从全端传入的】
 //根据新添题目的id，遍历一个数组，两个数组一个用item，一个使用index取出同一索引上的一条选项内容，加上这道题的id，加入数据库中的选项表中。】
 //subjectId？？？(╯‵□′)╯︵┻━┻
     subjectRoute.post('/addSubjectChoice',function(req,resp){
         var queryInfo = req.body;
             var subjectId = queryInfo["subjectId"]; 
             var choiceContents4 = queryInfo["choiceContents[]"]; 
-            var choiceCorrect4 = queryInfo["choiceCorrect[]"];   
+            var correctChoices4 = queryInfo["correctChoices[]"];   
         console.log("choiceContents4:::",choiceContents4);
-        console.log("choiceCorrect4:::",choiceCorrect4);
-        choiceCorrect4.forEach(function(item,index){
+        console.log("correctChoices4:::",correctChoices4);
+        correctChoices4.forEach(function(item,index){
             subjectDB.addSubjectChoice(choiceContents4[index],item,subjectId).then(
                 function(){
                     var retu="添加成功";
@@ -379,72 +250,6 @@ subjectRoute.post('/recheckSubject',function(req,resp){
                 })
             });
         });
-
-
-//【测试保存方法】【好像没测出结果= =【成功了！！数据库中把选项差进去了！！！】】
-// subjectRoute.get('/saveSubject',function(req,resp){
-//     // var queryInfo = req.body;
-//     //     var dep = queryInfo["subject.department.id"]; 
-//     //     var topic = queryInfo["subject.topic.id"]; 
-//     //     var types = queryInfo["subject.subjectType.id"]; 
-//     //     var level = queryInfo["subject.SubjectLevel.id"]; 
-
-//     //     var stem = queryInfo["subject.stem"]; 
-//     //     var analysis = queryInfo["subject.analysis"];
-
-//     //     var choiceContent = queryInfo["choiceContent"]; 
-//     //     var checkState = queryInfo["checkState"]; //"未审核",
-//     // //这里是数组= =
-//     //     var choiceContents = queryInfo["choiceContents[]"]; 
-//     //     var choiceCorrect = queryInfo["choiceCorrect[]"];      
-//                         //      题干   2    2     2     2      解析      选项/答案    审核状态
-//         subjectDB.addSubject(subjectDB.addSubject('333',2,2,2,2,'333',[1,1,1,1],'未审核').then(function(){
-//                 subjectDB.queryOneNewSubjectId('333',2,2,2,2,'333',[1,1,1,1],'未审核').then(
-//                     //取出的是一个数组，第一项也是唯一一项是一个对象=[{id:XXX}]
-//                     function(data){
-//                         console.log(data);
-//                         var subjectId=data[0].id;
-//                         console.log(subjectId);
-//                         [1,1,1,1].forEach(function(item,index){
-//                             subjectDB.addSubjectChoice([1,0,0,0][index],item,subjectId).then(
-//                                 function(){
-//                                     var retu="_(:зゝ∠)__(:зゝ∠)__(:зゝ∠)_";
-//                                     resp.send(retu);
-//                                 }).catch(function(error){
-//                                     resp.send(error);
-//                                 }).catch(function(error){
-//                             resp.send(error);
-//                         });
-//                             });
-//                     })
-//         })
-//         )
-// });
-
-//【测试按照所有信息能否获取题目id】
-//通过所有信息，以查找到这个刚刚添加进去的题目，因为之后的操作需要这道题的id
-//     subjectRoute.get('/queryOneNewSubjectId',function(req,resp){
-// //         subjectDB.queryOneNewSubject('22222',2,2,2,2,'22222',[1,1,1,1],'未审核').then(function(data){
-//          subjectDB.queryOneNewSubjectId('22222',2,2,2,2,'22222',[1,1,1,1],'未审核').then(function(data){
-//         //subjectDB.queryOneNewSubject(stem,dep,level,types,topic,analysis,choiceContent,checkState).then(function(data){
-//             // resp.send(data);
-            // data.forEach(function(item,index){
-            //     var c=item.id;
-            //     console.log("55555555555555555"+c);//这里可以取出61！！！！！
-//             })
-//             // for(var i in oneSub){
-//             //     var b =i;
-//             // }
-//             resp.send(c);
-//         }).catch(function(error){
-//             resp.send(error);
-//         });
-//     });
-
-
-//-----【添加题目的选项】-------
-
-
 
 /*-----------------------------------------------------------*/
 

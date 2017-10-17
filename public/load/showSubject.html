@@ -410,7 +410,7 @@
 
           //获取题目的id【如何使用呢= =】
             choice_subject_id=Data[c].subject_id; 
-          //得到纯粹的，选项内容和正误的两个数组 
+          //得到纯粹的，选项内容和正误的两个数组  
             choiceContent[c]=choice_content;//console.log("c",c,"  data数组中每一项即各个选项的内容：",choice_content);
             choiceCorrect[c]=choice_correct;//console.log("c",c,"  data数组中每一项即各个选项的正误：",choice_correct);
         }//for循环结束
@@ -494,7 +494,30 @@
                             break;
                     //case "删除题目":【按照模板 一举成功_(:зゝ∠)_】
                     case "删除题目":
-                        alert("尚未完成此功能");
+                    //【由于题目的id是选项表的外键。所以直接在题目表中执行对单选多选题目的删除会报错。】
+                    //【所以，先把选项表中id=选定的题目的id的项都删除，才可以删除题目表中的额这一项】
+                        // alert("尚未完成此功能");
+                        //【B删除选项】
+                    //【如果不是单多选，可以直接删除题目
+                //【不用考虑题型[话说这里我去哪取题型OTZ]】，因为执行删除选项的sql语句，如果表中没有给出的subject_id，删除0行，并没有影响
+                        $.ajax('exam/manager/deleteChoice',{
+                            method:"post",
+                            data:{"subjectId":sub_id},
+                            //success:function(){
+                            success:function(retu){
+                                alert("第"+sub_id+"道题，"+retu+"成功！");//在XXXRoutes.js文件中调用方法时定义-var retu="审核成功"
+                            }
+                        }
+                        );
+                        //【A删除题目】
+                        $.ajax('exam/manager/deleteSubject',{
+                            method:"post",
+                            data:{"subjectId":sub_id},
+                            success:function(retu){
+                                alert("第"+sub_id+"道题，"+retu+"成功！");//在XXXRoutes.js文件中调用方法时定义-var retu="审核成功"
+                            }
+                        }
+                        );
                             break;
                 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= 
                     case "加入试卷":

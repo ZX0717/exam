@@ -67,6 +67,20 @@ module.exports={
     },
 
 //===========================================================================================================================================
+/*根据题干查找题目，显示div*/
+
+
+
+
+
+
+
+
+
+
+
+
+//===========================================================================================================================================
     /*根据题目id 审核题目*/
     checkSubject(id){
         //【测试用参数】var id =3;
@@ -77,16 +91,12 @@ module.exports={
 
 //【审核不通过的方法】==============================
     uncheckSubject(id){
-        //【测试用参数】var id =3;
-        //var sql =【反正出错了= =】"update 'exam'.'tbl_exam_subject' set 'checkState'='审核通过' where 'id="+id; 
         var sql ="update tbl_exam_subject set checkState='未通过' where id="+id; 
         return pool.executeSql(sql);
     }, 
 
 //【重新审核的方法】==============================
     recheckSubject(id){
-        //【测试用参数】var id =3;
-        //var sql =【反正出错了= =】"update 'exam'.'tbl_exam_subject' set 'checkState'='审核通过' where 'id="+id; 
         var sql ="update tbl_exam_subject set checkState='重新审核' where id="+id; 
         return pool.executeSql(sql);
     },
@@ -94,35 +104,51 @@ module.exports={
 
 //【删除题目的的方法】==============================
 //===【还有对外键的影响OTZ 完全忘记了】====================
-    checkSubject(id){
+//【注意，删除也要删除选项表中的数据】
+//【删除前先取到题目id，再取到题目的选项(如果有的话)，取answer，如果有逗号，将字符串转成数组，再foreach，挨个取出，
+//通过三个参数，经过一个方法【待写】，从表中找出这条数据，删除。】
+//【喂喂，你这里写的方法名是“审核”的啊！！！！！】
+    deleteSubject(id){
         //【测试用参数】var id =3;
         var sql ="delete from tbl_exam_subject where id="+id; 
         return pool.executeSql(sql);
     },
-
+    //还有，删除题目如何将id也删去？【或许不需要这样。因为一个id关联的东西太多，如果是动态的，那么选项表终端额id也要随之改变。】
+    deleteChoice(subjectId){
+        //content,correct,subject_id
+        //【删除一道题的所有选项，执行一个：  即可
+        //DELETE FROM `exam`.`tbl_exam_choice` WHERE `subject_id`='61';
+        var sql="delete from tbl_exam_choice where subject_id="+subjectId;
+        return pool.executeSql(sql);
+    },
 
 
 //-----【添加题目的的方法】----------------------------------------------------------------------------------------------------------
-    addSubject(stem,dep,level,types,topic,analysis,choiceContent,checkState,choiceContents,choiceCorrect){
-      console.log("添加题目的参数：",'stem:',stem,',dep:',dep,',level:',level,',types:',types,',topic:',topic,',analysis:',analysis,',choiceContent选项内容-字符串状态:',choiceContent,',checkState:',checkState,',choiceContents选项内容-数组:',choiceContents,',choiceCorrect选项正误:',choiceCorrect);
+    addSubject(stem,dep,level,types,topic,analysis,choiceContent,checkState,choiceContents,correctChoices){
+      //console.log("sql1-添加题目的参数：",'stem:',stem,',dep:',dep,',level:',level,',types:',types,',topic:',topic,',analysis:',analysis,',choiceContent选项内容-字符串状态:',choiceContent,',checkState:',checkState,',choiceContents选项内容-数组:',choiceContents,',correctChoices选项正误:',correctChoices);
 //// 添加题目的参数： stem: 3434343 ,dep: 2 ,level: 2 ,types: 2 ,topic: 2 ,analysis: 3345666 ,choiceContent: 222,23,2224,2225 ,checkState: 未审核
 // 释放完成【这道题确实添加成功了，但选项还是没着落】
         var sql= "insert into tbl_exam_subject(stem,department_id,subjectLevel_id,subjectType_id,topic_id,analysis,answer,checkState) values('"+stem+"',"+dep+","+level+","+types+","+topic+",'"+analysis+"','"+choiceContent+"','"+checkState+"')";
         //return pool.executeSql(sql);
-//<方法C>在数据添加完后，直接理由这些参数进行查找：
+//<方法C>在数据添加完后，直接利用这些参数进行查找：
         //return是一个函数的最后一行，所以这个return删去。有括号，执行SQL语句的方法应该就执行了...吧？        
         pool.executeSql(sql);
     //<方法C>
         var sql2= "select id from tbl_exam_subject where stem='"+stem+"' and department_id="+dep+" and subjectLevel_id="+level+" and subjectType_id="+types+" and topic_id="+topic+" and analysis='"+analysis+"' and answer='"+choiceContent+"' and checkState='"+checkState+"'"; 
+        //console.log("slq2-添加题目的参数：",'stem:',stem,',dep:',dep,',level:',level,',types:',types,',topic:',topic,',analysis:',analysis,',choiceContent选项内容-字符串状态:',choiceContent,',checkState:',checkState,',choiceContents选项内容-数组:',choiceContents,',correctChoices选项正误:',correctChoices);
         //查询语句的返回值：[{'id':XXX}]
-        var newId =pool.executeSql(sql2);
-        var arr=[newId,choiceContents,choiceCorrect]
-        return arr;
+    
+        choiceContents2=choiceContents;
+        correctChoices2=correctChoices;
+        console.log('choiceContents2+++++++',choiceContents2);
+        console.log('correctChoices2++++++',correctChoices2);  
+        return pool.executeSql(sql2);
+        //这样取不到返回值： var newId =pool.executeSql(sql2);  
     },
 
 //-----【添加题目选项的的方法】------------------------------
-    addSubjectChoice(oneChoiceContent,oneChoiceCorrect,subjectId){
-        var sql= "insert into tbl_exam_choice(content,correct,subject_id) values('"+oneChoiceContent+"',"+oneChoiceCorrect+","+subjectId+")";
+    addSubjectChoice(oneChoiceContent,onecorrectChoices,subjectId){
+        var sql= "insert into tbl_exam_choice(content,correct,subject_id) values('"+oneChoiceContent+"',"+onecorrectChoices+","+subjectId+")";
         return pool.executeSql(sql);
     },
 
