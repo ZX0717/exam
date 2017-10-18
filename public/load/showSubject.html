@@ -70,8 +70,8 @@
                         </div>
                     </div>
                 </div>
-                    <!--两个框不用区分的吗= = 审核过的题目才可以加入事试卷  -->
-                <div class="Catalog_rightnei">
+                    <!--两个框不用区分的吗= = 审核过的题目才可以加入事试卷[]  -->
+                <!-- <div class="Catalog_rightnei">
                     <div class="Catalogtitwo">
                         题号：25544&nbsp;&nbsp;
                         题型：三种&nbsp;&nbsp;
@@ -87,7 +87,9 @@
                             <a href="javascript:void(0)">加入试卷</a>
                         </div>
                     </div>
-                </div>
+                </div> -->
+
+
             </div>
             <div class="clear"></div>
         </div>
@@ -104,6 +106,7 @@
 
 <script type="text/javascript">
     $(function(){
+
     //【添加题目】
         /*点击单个添加题目，页面跳转*/
         $('.c_condition .icon_add .icon_r').click(function(){
@@ -264,6 +267,8 @@
         //【把这个注释了就不报错了= =【data就是数组 不用转换？？？】】//data = JSON.parse(data);
         $('.Catalogtitle').find("em").html(data.length);//将【总计】的数据与数据库关联
         //清空【点击才可执行】//【还是希望打开页面，全部的a标签可以模拟点击，显示出所有题目】
+
+        //【这里的remove，于克隆的框架无关，表示在筛选条件改变后，现将页面现有哦的div都清空，重新追加新的div】
         $('.Catalog_rightnei:not(:hidden)').remove();
         //$('.Catalog_rightnei:visible').remove();
 
@@ -309,6 +314,8 @@
                     //将这些提通过前端的方法[如showAnswer()]，将得到的数据遍历，一个一个展示出来的是每一道题的答案
                     //遍历后，这些被遍历的简答题都得到了对应的答案
                 //}//showData函数结束后，所有div都会得到对应的简答题[带答案]
+
+
         //【对于简答题审核的绑定OTZ】【因为之前对绑定的操作是绑定在添加选项的遍历函数里的。这里则绑定到到对筛选后获得的题目组成的数组进行遍历后得到的每一项上】
             $("span[class='"+item.id+"']").parent().parent().find(".Catalogcontentdown").off("click");
             //$("span[class='"+item.id+"']").parent().parent().find(".Catalogcontentdown").on("click",'a',function(){alert("choice_subject_id/item.id:"+item.id+"  【简答题的审核按钮】绑定a成功22222")});
@@ -349,16 +356,30 @@
                                 break;
                         //case "删除题目":
                         case "删除题目":
+                        //【由于题目的id是选项表的外键。所以直接在题目表中执行对单选多选题目的删除会报错。】
+                        //【所以，先把选项表中id=选定的题目的id的项都删除，才可以删除题目表中的额这一项】
                             // alert("尚未完成此功能");
+                            //【B删除选项】
+                        //【如果不是单多选，可以直接删除题目
+                    //【不用考虑题型[话说这里我去哪取题型OTZ]】，因为执行删除选项的sql语句，如果表中没有给出的subject_id，删除0行，并没有影响
+                            $.ajax('exam/manager/deleteChoice',{
+                                method:"post",
+                                data:{"subjectId":sub_id},
+                                //success:function(){
+                                success:function(retu){
+                                    alert("第"+sub_id+"道题，"+retu+"成功！");//在XXXRoutes.js文件中调用方法时定义-var retu="审核成功"
+                                }
+                            }
+                            );
+                            //【A删除题目】
                             $.ajax('exam/manager/deleteSubject',{
                                 method:"post",
                                 data:{"subjectId":sub_id},
                                 success:function(retu){
-                                    alert("第"+sub_id+"道题，已"+retu);//在XXXRoutes.js文件中调用方法时定义-var retu="审核成功"
+                                    alert("第"+sub_id+"道题，"+retu+"成功！");//在XXXRoutes.js文件中调用方法时定义-var retu="审核成功"
                                 }
                             }
                             );
-                                break;
                                 break;
 
                         case "加入试卷":
@@ -431,7 +452,7 @@
             $("span[class='"+choice_subject_id+"']").append(Content);
         
 
-    //【这里 无法对简答题进行审核OTZ】
+    //【这里 无法对简答题进行审核OTZ】【已解决】
         //审核功能测试= =【每个div的按键与题目的id成功绑定！！】
             //console.log("???为什么会打四遍???都是谁打的？？？",choice_subject_id);//【由此可知，这样还是没能帮到单独的div= =】
             $("span[class='"+choice_subject_id+"']").parent().parent().find(".Catalogcontentdown").off("click");
@@ -492,7 +513,7 @@
                         }
                         );
                             break;
-                    //case "删除题目":【按照模板 一举成功_(:зゝ∠)_】
+                    //case "删除题目":【按照模板 一举成功_(:зゝ∠)_】【成功个鬼，外键都忘了= =】
                     case "删除题目":
                     //【由于题目的id是选项表的外键。所以直接在题目表中执行对单选多选题目的删除会报错。】
                     //【所以，先把选项表中id=选定的题目的id的项都删除，才可以删除题目表中的额这一项】
